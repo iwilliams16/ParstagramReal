@@ -13,9 +13,7 @@ class LoginViewController: UIViewController {
     
     
     @IBOutlet weak var userNameField: UITextField!
-    
     @IBOutlet weak var passwordField: UITextField!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +21,19 @@ class LoginViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-    
-    
     @IBAction func onSignIn(_ sender: Any) {
         
+        let username = userNameField.text!
+        let password = passwordField.text!
         
+        PFUser.logInWithUsername(inBackground: username, password: password)
+        { (user, error) in
+            if user != nil {
+                self.performSegue(withIdentifier: "loginSegue", sender: nil)
+            }else{
+                print("Error: \(error?.localizedDescription)")
+            }
+        }
     }
     
     
@@ -37,14 +43,14 @@ class LoginViewController: UIViewController {
         user.username = userNameField.text
         user.password = passwordField.text
         
-        user.signUpInBackground { (success, error) in
-            if success {
-                self.performSegue(withIdentifier: "loginSegue", sender: nil)
+        user.signUpInBackground{ (success: Bool, error: Error?) in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
             } else {
-                print("Error: \(error?.localizedDescription)")
+                self.performSegue(withIdentifier: "loginSegue", sender: nil)
             }
         }
-        // other fields can be set just like with PFObject
+       
         
 
     }
