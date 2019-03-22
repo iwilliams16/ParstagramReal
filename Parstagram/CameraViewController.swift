@@ -8,6 +8,7 @@
 
 import UIKit
 import AlamofireImage
+import Parse
 
 class CameraViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -25,6 +26,26 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     @IBAction func onSubmitButton(_ sender: Any) {
+        
+        let post = PFObject(className: "Posts")
+        
+        post["caption"] = commentField.text!
+        post["author"] = PFUser.current()!
+        
+        let imageData = imageView.image! .pngData()
+        let file = PFFileObject(data: imageData!)
+        
+        post["image"] = file
+        
+        post.saveInBackground { (success, error) in
+            if success {
+                self.dismiss(animated: true, completion: nil)
+                print("Saved")
+            }else{
+                print("error!")
+            }
+        }
+            
         
     }
     
@@ -44,10 +65,8 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
         present(picker, animated: true, completion: nil)
     }
     
-    private func imagePickercController(_ picker:
-        UIImagePickerController,
-        didFinishPickingMediaWithInfo info:
-        [UIImagePickerController.InfoKey : Any]) {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         let image = info[.editedImage] as! UIImage
         
@@ -56,7 +75,9 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
         
         imageView.image = scaledImage
         
-        dismiss(animated: true, completion: nil)
+         dismiss(animated: true, completion: nil)
+    }
+    
         
         
         
@@ -71,5 +92,3 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
         // Pass the selected object to the new view controller.
     }
     */
-
-}
